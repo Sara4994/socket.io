@@ -1,5 +1,5 @@
 {
-  "name": "socket.io",
+  "name": "socket.io_try",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.4",
-    "heroku": "^7.19.4"
-  }
+    "heroku": "^7.19.4",
+    "socket.io": "^2.2.0"
+  },
+  "devDependencies": {}
 }
