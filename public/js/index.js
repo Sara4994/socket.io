@@ -19,6 +19,16 @@ var socket = io();
             $('#message').append(li);
         })
 
+        socket.on('newLocationMessage', (message) => {
+            var li = $('<li></li>');
+            var a = $('<a target="_blank"> My current location </a>')
+
+            li.text(`${message.from}: `)
+            a.attr('href', message.url)
+            li.append(a);
+            $('#messages').append(li)
+        })
+
         socket.on('newMessage', (message) =>{
             console.log('newMessage', message)
         })
@@ -38,5 +48,22 @@ var socket = io();
                 text: $('[name=message]').val()
             }, function(data){
                 console.log('Got it',data)
+            })
+        })
+
+        var locationButton = $('#send-location')
+
+        locationButton.on('click', () => {
+            if(!navigator.geolocation) {
+             return alert('Geolocation is not support by the browser')
+            }
+            
+            navigator.geolocation.getCurrentPosition( (position) => {
+                socket.emit('createlocationMessage', {
+                    latitude: position.coords.latitude,
+                    longitude: position.coords.longitude
+                })
+            }, () => {
+                alert('Unable to fetch location')
             })
         })
