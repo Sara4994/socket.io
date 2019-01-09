@@ -3,6 +3,22 @@
 
 var socket = io();
 
+        function scrollToBottom () {
+            // Selectors
+            var messages = $('#messages');
+            var newMessage = messages.children('li:last-child')
+            // Heights
+            var clientHeight = messages.prop('clientHeight');
+            var scrollTop = messages.prop('scrollTop');
+            var scrollHeight = messages.prop('scrollHeight');
+            var newMessageHeight = newMessage.innerHeight();
+            var lastMessageHeight = newMessage.prev().innerHeight();
+          
+            if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight >= scrollHeight) {
+              messages.scrollTop(scrollHeight);
+            }
+          }
+
         socket.on('connect', () => {
             console.log('Connected to server');            
         })
@@ -20,7 +36,8 @@ var socket = io();
                 createdAt: formattedTime    
             })
 
-            $('#message').append(html)
+            $('#messages').append(html);
+            scrollToBottom();
             //console.log('newMessage', message);
             // var li = $('<li></li>');
             // li.text(`${message.from} ${formattedTime}: ${message.text}`)
@@ -29,14 +46,23 @@ var socket = io();
         })
 
         socket.on('newLocationMessage', (message) => {
-            var formattedTime = moment(message.createdAt).format('h:mm a')
-            var li = $('<li></li>');
-            var a = $('<a target="_blank"> My current location </a>')
+            var formattedTime = moment(message.createdAt).format('h:mm a');
+            var template = $('#location-message-template').html();
+            var html = Mustache.render(template, {
+                from: message.from,
+                url: message.url,
+                createdAt: formattedTime
+            })
 
-            li.text(`${message.from} ${formattedTime}: `)
-            a.attr('href', message.url)
-            li.append(a);
-            $('#messages').append(li)
+            $('#messages').append(html);
+            scrollToBottom();
+            // var li = $('<li></li>');
+            // var a = $('<a target="_blank"> My current location </a>')
+
+            // li.text(`${message.from} ${formattedTime}: `)
+            // a.attr('href', message.url)
+            // li.append(a);
+            // $('#messages').append(li)
         })
 
         socket.on('newMessage', (message) =>{
@@ -74,7 +100,7 @@ var socket = io();
             
             navigator.geolocation.getCurrentPosition( (position) => {
                 locationButton.removeAttr('disabled').text('Send location');
-                socket.emit('createlocationMessage', {
+                socket.emit('createLocationMessage', {
                     latitude: position.coords.latitude,
                     longitude: position.coords.longitude
                 })
