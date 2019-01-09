@@ -28,7 +28,7 @@ io.on('connection', (socket) => {
 //            txt: message.text,
 //            createdAt: new Date().getTime() 
 //         })
-        acknowledgement('This is from server');
+        acknowledgement();
     })
 
     socket.on('createLocationMessage', (coords) => {
